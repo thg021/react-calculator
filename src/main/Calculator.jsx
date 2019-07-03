@@ -15,7 +15,7 @@ export default class Calculator extends Component{
 
     //Manipulando o state com operador spread. 
     state = {...initialState }
-   //as funcoes abaixos irão garantir que o this esteja correto. apontado para Calculator. 
+   //as funcoes abaixos irï¿½o garantir que o this esteja correto. apontado para Calculator. 
     constructor(props) {
         super(props)
         this.clearMemory = this.clearMemory.bind(this)
@@ -28,25 +28,35 @@ export default class Calculator extends Component{
     }
 
     setOperation(operation){
-        const displayValue = '0'
-        const current = 1
-        
-        if(operation === '='){
-            const values = this.state.values
-            const operationSelect = this.state.operation
-            const result = `${values[0]}${operationSelect}${values[1]}` 
-            console.log(result)
-            return
+        if(this.state.current === 0){
+            this.setState({ operation, current: 1, clearDisplay: true})
+        }else{
+            const equals = operation === '='
+            const currentOperation = this.state.operation
+            const values = {...this.state.values}
+            try{
+                values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}`)
+                values[1] = 0
+            }catch(e){
+                values[0] = this.state.values[0]
+            }
+
+            this.setState({
+                displayValue: values[0], 
+                operation: equals ? null : operation, 
+                current: equals ? 0 : 1,
+                clearDisplay: !equals, 
+                values
+            })
+           
         }
-       
-        this.setState({
-            current, displayValue, operation
-        })
+
+
     }
 
     addDigit(n){
         console.log(n)
-        //validação para evitar que o usuarios adicione dois '.'
+        //validaï¿½ï¿½o para evitar que o usuarios adicione dois '.'
         if (n === '.' && this.state.displayValue.includes('.')){
             return 
         }
